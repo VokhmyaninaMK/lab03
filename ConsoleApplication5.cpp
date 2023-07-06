@@ -14,32 +14,18 @@
 
 using namespace std;
 
-
-int main()
-{
-	const size_t SCREEN_WIDTH = 80;
-	const size_t MAX_ASTERISK = SCREEN_WIDTH - 3 - 1;
-
-	size_t number_count, bin_count, interval;
-	cerr << "Enter number count: ";
-	cin >> number_count;
-
-	vector<double> numbers(number_count);
-	for (size_t i = 0; i < number_count; i++)
-		cin >> numbers[i];
-	cin >> bin_count;
-
-	vector<size_t> bins(bin_count);
-	cerr << "Enter the interval: ";
-	cin >> interval;
-
-	if (interval < 4 || interval > 9) {
-		cout << "ERROR";
-		return 0;
+const size_t SCREEN_WIDTH = 80;
+const size_t MAX_ASTERISK = SCREEN_WIDTH - 3 - 1;
+vector<double> input_numbers(size_t count) {
+	vector<double> result(count);
+	for (size_t i = 0; i < count; i++) {
+		cin >> result[i];
 	}
+	return result;
+}
 
-	double min = numbers[0];
-	double max = numbers[0];
+void find_minmax(const vector<double>& numbers, double& min, double& max) {
+	min = max = numbers[0];
 	for (double x : numbers) {
 		if (x < min) {
 			min = x;
@@ -48,6 +34,15 @@ int main()
 			max = x;
 		}
 	}
+}
+
+vector<size_t> make_histogram(const vector<double>& numbers, size_t& bin_count)
+{
+	double min, max;
+	find_minmax(numbers, min, max);
+
+	vector<size_t> bins(bin_count);
+	size_t number_count = numbers.size();
 
 	double bin_size = (max - min) / bin_count;
 	for (size_t i = 0; i < number_count; i++) {
@@ -60,13 +55,16 @@ int main()
 				found = true;
 			}
 		}
-		// цикл по numbers не закончился!
-
 		if (!found) {
 			bins[bin_count - 1]++;
 		}
-	} // конец цикла по numbers
+	}
+	return bins;
+}
 
+void show_histogram_text(vector<size_t> bins)
+{
+	size_t bin_count = bins.size();
 	size_t max_count = bins[0];
 	for (size_t x : bins) {
 		if (x > max_count)
@@ -86,6 +84,15 @@ int main()
 		for (size_t j = 0; j < height; j++)
 			cout << '*';
 		cout << '\n';
+	}
+}
+
+void show_division_scale(vector<size_t> bins, size_t& interval)
+{
+	size_t max_count = bins[0];
+	for (size_t x : bins) {
+		if (x > max_count)
+			max_count = x;
 	}
 
 	if (max_count > MAX_ASTERISK)
@@ -108,4 +115,24 @@ int main()
 		else
 			cout << ' ';
 	}
+}
+
+int main()
+{
+	size_t number_count;
+	cin >> number_count;
+	const auto numbers = input_numbers(number_count);
+	size_t bin_count;
+	cin >> bin_count;
+
+	size_t interval;
+	cin >> interval;
+	if (interval < 2 || interval > 9) {
+		cout << "ERROR";
+		return 0;
+	}
+
+	const auto bins = make_histogram(numbers, bin_count);
+	show_histogram_text(bins);
+	show_division_scale(bins, interval);
 }
