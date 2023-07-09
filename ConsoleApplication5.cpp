@@ -11,6 +11,7 @@
 #include <set>
 #include <stdio.h>
 #include "histogram.h"
+#include "svg.h"
 using namespace std;
 
 
@@ -97,6 +98,8 @@ void show_division_scale(vector<size_t> bins, size_t& interval)
 }
 
 
+
+
 int main()
 {
 	size_t number_count;
@@ -106,10 +109,7 @@ int main()
 	cin >> bin_count;
 	size_t interval;
 	cin >> interval;
-	if (interval < 2 || interval > 9) {
-		cout << "ERROR";
-		return 0;
-	}
+	input_interval(interval);
 
 	const auto bins = make_histogram(numbers, bin_count);
 	show_histogram_svg(bins, interval);
